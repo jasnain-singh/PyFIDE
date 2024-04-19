@@ -19,44 +19,33 @@ with open('_fide_ids.pickle', 'rb') as f2:
 options = Options() 
 options.add_argument("-headless")
 
-# Initializing lists & dicts
-players_list = _players_list
-fide_ids = _fide_ids
-p_ranks = []
-p_name = []
-p_country = []
-p_elo = []
-p_year = []
-new_list = []
-period1 = []
-period2 = []
-period3 = []
-classical_rtngs = []
-classical_gms = []
-rapid_rtngs = []
-rapid_gms = []
-blitz_rtngs = []
-blitz_gms =[]
+# exception lists for players that have more than their first and last name on the website.
+# prevents errors during string splitting and slicing while getting the individual data of a player.
+# if a new player is added with 3 or 4 names, append FIRST NAME to the suitable list.
+name3_exception = ['Dominguez', 'Le,', 'Vidit,', 'Tabatabaei,', 'Narayanan','Martirosyan,',
+                   'Niemann,','Anton', 'Van', 'Aravindh,','Vallejo','Li,', 'Bjerre,']
+name4_exception = ['Howell,', 'Nguyen,']
 
 
 class FideInfo:
     
+    def __init__(self, players_list = _players_list, fide_ids = _fide_ids):
+        self.players_list = players_list
+        self.fide_ids = fide_ids
+        
     URL1 = 'https://ratings.fide.com'
     URL2 = 'https://ratings.fide.com/profile/'
     XPATH = '/html/body/section[3]/div[2]/div/div[4]/div/div[1]/div[2]/div/div[2]/table/tbody/tr'
         
-    # exception lists for players that have more than their first and last name on the website.
-    # prevents errors during string splitting and slicing while getting the individual data of a player.
-    # if a new player is added with 3 or 4 names, append FIRST NAME to the suitable list.
-    name3_exception = ['Dominguez', 'Le,', 'Vidit,', 'Tabatabaei,', 'Narayanan',
-                   'Martirosyan,', 'Niemann,', 'Anton', 'Van', 'Aravindh,','Vallejo',
-                   'Li,', 'Bjerre,']
-
-    name4_exception = ['Howell,', 'Nguyen,']
-    
     
     def getTop(self, max:int = 100):
-        for players in players_list[1:max+1]:
+        p_ranks = []
+        p_name = []
+        p_country = []
+        p_elo = []
+        p_year = []
+        p_ranks
+        for players in self.players_list[1:max+1]:
             players = players.split(' ')
             
             if players[1] in self.name3_exception:
@@ -99,7 +88,7 @@ class FideInfo:
     
     
     def getFideIds(self, ) -> pd.DataFrame:
-        x = pd.DataFrame(fide_ids.items(), columns=['Name', 'FIDE id'])
+        x = pd.DataFrame(self.fide_ids.items(), columns=['Name', 'FIDE id'])
         y = pd.concat([FideInfo.getTop(self,).set_index('Name'), x.set_index('Name')], axis=1).reset_index()
         
         return y
@@ -121,7 +110,7 @@ class FideInfo:
                     (By.XPATH, f'{self.XPATH}[{x+1}]/td[2]/a'))).text
                             )
         
-        fide_ids = {}        
+        fide_ids = {}
         for idx, ids in enumerate(idscrape):
             x = ids.strip(self.URL2)
             fide_ids[f'{names[idx]}'] = x
@@ -130,11 +119,12 @@ class FideInfo:
             
             
     def getFideId(self, name:str) -> int:
-        return int(fide_ids[name])
+        return int(self.fide_ids[name])
     
     
     def getAllRatings(self, name:str):
-        x = fide_ids[name]
+        new_list = []
+        x = self.fide_ids[name]
         
         with webdriver.Firefox(options=options) as driver:
             wait = WebDriverWait(driver, 100)
@@ -147,7 +137,12 @@ class FideInfo:
         return new_list
     
     
-    def classical(self, name:str = None) -> pd.DataFrame:   
+    def classical(self, name:str = None) -> pd.DataFrame: 
+        period1 = []
+        classical_rtngs = []
+        classical_gms = []
+       
+        
         for idx, item in enumerate(FideInfo.getAllRatings(self, name=name)):
             period1.append(item[0])
             classical_rtngs.append(item[1])
@@ -158,6 +153,10 @@ class FideInfo:
         
     
     def rapid(self, name:str = None) -> pd.DataFrame:
+        period2 = []
+        rapid_rtngs = []
+        rapid_gms = []
+
         for idx, item in enumerate(FideInfo.getAllRatings(self, name=name)):
             try:
                 period2.append(item[0])
@@ -173,6 +172,10 @@ class FideInfo:
     
     
     def blitz(self, name:str = None) -> pd.DataFrame:
+        period3 = []
+        blitz_rtngs = []
+        blitz_gms =[]
+
         for idx, item in enumerate(FideInfo.getAllRatings(self, name=name)):
             try:
                 period3.append(item[0])
