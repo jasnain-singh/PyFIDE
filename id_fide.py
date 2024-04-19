@@ -1,3 +1,5 @@
+import pickle
+
 _fide_ids = {
     'Carlsen, Magnus': '1503014',
     'Caruana, Fabiano': '2020009',
@@ -100,3 +102,6 @@ _fide_ids = {
     'Ma, Qun': '8603154',
     'Yilmaz, Mustafa': '6302718'
     }
+
+with open('_fide_ids.pickle', 'wb') as f:
+    pickle.dump(_fide_ids, f)

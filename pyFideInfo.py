@@ -1,4 +1,5 @@
 # Importing dependenciesimport numpy as np
+import pickle
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -6,8 +7,13 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 
-from pl_list import _players_list
-from id_fide import _fide_ids
+# from pl_list import _players_list
+# from id_fide import _fide_ids
+
+with open('_players_list.pickle', 'rb') as f1:
+    _players_list = pickle.load(f1)
+with open('_fide_ids.pickle', 'rb') as f2:
+    _fide_ids = pickle.load(f2)
 
 # Setting selenium options
 options = Options() 

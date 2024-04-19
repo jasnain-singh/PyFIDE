@@ -1,3 +1,5 @@
+import pickle
+
 _players_list = ['# Name Fed Rating +- B-Year',
                 '1 Carlsen, Magnus\nNOR 2830   1990',
                 '2 Caruana, Fabiano\nUSA 2803   1992',
@@ -99,3 +101,6 @@ _players_list = ['# Name Fed Rating +- B-Year',
                 '98 Liang, Awonder\nUSA 2642   2003',
                 '99 Ma, Qun\nCHN 2641   1991',
                 '100 Yilmaz, Mustafa\nTUR 2641   1992']
+
+with open('_players_list.pickle', 'wb') as f:
+    pickle.dump(_players_list, f)
