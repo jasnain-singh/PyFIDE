@@ -48,7 +48,7 @@ class FideInfo:
         for players in self.players_list[1:max+1]:
             players = players.split(' ')
             
-            if players[1] in self.name3_exception:
+            if players[1] in name3_exception:
                 p_ranks.append(players[0])
                 p_name.append(players[1] + ' ' + players[2] + ' ' + players[3].split('\n')[0])
                 p_country.append(players[3].split('\n')[1])
@@ -56,7 +56,7 @@ class FideInfo:
                 p_year.append(players[7])
                 continue
             
-            if players[1] in self.name4_exception:
+            if players[1] in name4_exception:
                 p_ranks.append(players[0])
                 p_name.append(players[1] + ' ' + players[2] + ' ' + players[3] +  ' ' + players[4].split('\n')[0])
                 p_country.append(players[4].split('\n')[1])
